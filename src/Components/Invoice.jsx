@@ -14,8 +14,6 @@ import {
 import styled from "styled-components";
 import Item from "./Item";
 import Total from "./Total";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 
 const Container = styled.div`
   width: 900px;
