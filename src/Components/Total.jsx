@@ -1,5 +1,8 @@
 import React from "react";
 import styled from "styled-components";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { addSubTotal, addTotal } from "../redux/Invoice/invoiceActions";
 
 const Container = styled.div`
   margin-left: 35%;
@@ -42,6 +45,36 @@ const TotalContainer = styled.div`
 `;
 
 const Total = () => {
+  const ItemData = useSelector((state) => state.Item);
+  const Data = useSelector((state) => state.invoiceData);
+
+  const dispatch = useDispatch();
+
+  const calcSubTotal = () => {
+    let SubTotal = 0;
+    ItemData.forEach((ele) => {
+      let price = parseInt(ele.price);
+      let quantity = parseInt(ele.quantity);
+      SubTotal = SubTotal + price * quantity;
+    });
+    dispatch(addSubTotal(SubTotal));
+    return SubTotal;
+  };
+
+  function calculateTotal() {
+    const subTotal = calcSubTotal();
+
+    const taxAmount = subTotal * (Data.taxRate / 100);
+
+    const discountAmount = subTotal * (Data.discountRate / 100);
+
+    const totalBeforeTax = subTotal - discountAmount;
+
+    const totalAfterTax = totalBeforeTax + taxAmount;
+    dispatch(addTotal(totalAfterTax.toFixed(2)));
+    return totalAfterTax.toFixed(2);
+  }
+
   return (
     <Container>
       <Wrapper>
@@ -51,9 +84,9 @@ const Total = () => {
           <Title>Tax:</Title>
         </TitleContainer>
         <ValueContainer>
-          <Actualvalue>{68451}</Actualvalue>
-          <Actualvalue>{"10%"}</Actualvalue>
-          <Actualvalue>{543}</Actualvalue>
+          <Actualvalue>{calcSubTotal()}</Actualvalue>
+          <Actualvalue>{Data.discountRate}</Actualvalue>
+          <Actualvalue>{Data.taxRate}</Actualvalue>
         </ValueContainer>
       </Wrapper>
       <TotalContainer>
@@ -61,7 +94,7 @@ const Total = () => {
           <Title>Total</Title>
         </TitleContainer>
         <ValueContainer>
-          <Actualvalue>{53415354}</Actualvalue>
+          <Actualvalue>{calculateTotal()}</Actualvalue>
         </ValueContainer>
       </TotalContainer>
     </Container>

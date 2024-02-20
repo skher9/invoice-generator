@@ -1,13 +1,26 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import {
+  addFromAddress,
+  addFromEmail,
+  addFromName,
+  addNote,
+  addToAddress,
+  addToEMail,
+  addToName,
+  addDate,
+  addInvoiceId,
+} from "../redux/Invoice/invoiceActions";
 import styled from "styled-components";
-import Item from "./Components/Item";
-import Total from "./Components/Total";
+import Item from "./Item";
+import Total from "./Total";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const Container = styled.div`
-  display: flex;
+  width: 900px;
   flex-wrap: wrap;
   font-size: small;
-  color: #3d3b40;
 `;
 
 const InvoiceContainer = styled.div`
@@ -17,10 +30,9 @@ const InvoiceContainer = styled.div`
   border-radius: 20px;
   min-height: 900px;
   max-width: 900px;
-  margin-left: 70px;
   margin-top: 70px;
-  margin-bottom: 70px;
   margin-right: 20px;
+  color: #3d3b40;
 `;
 
 const DateContainer = styled.div`
@@ -119,42 +131,66 @@ const NoteArea = styled.textarea`
 
 ///////////////////////////////////////////////
 
-const ReviewContainer = styled.div`
-  flex: 1 1 20%;
-  border: 1px solid;
-  height: 200px;
-  width: 250px;
-  margin-top: 70px;
-  margin-left: 60px;
-  margin-right: 100px;
-`;
-
-const ReviewButton = styled.button`
-  margin: 20px;
-  height: 40px;
-  width: 250px;
-  background-color: #40a2e3;
-  border: none;
-  font-size: large;
-  border-radius: 10px;
-  color: white;
-  cursor: pointer;
-`;
-
 const Invoice = () => {
-  const [itemList, setItemList] = useState([]);
   const [count, setCount] = useState(1);
+
+  const dispatch = useDispatch();
 
   const renderComponents = () => {
     const components = [];
     for (let i = 0; i < count; i++) {
-      components.push(<Item key={i} />);
+      components.push(<Item key={i} id={i + 1} />);
     }
     return components;
   };
 
   const handleAddItemClick = (e) => {
     setCount(count + 1);
+  };
+
+  const handleaddDate = (e) => {
+    const temp = e.target.value;
+    dispatch(addDate(temp));
+  };
+
+  const handleaddInvoiceId = (e) => {
+    const temp = e.target.value;
+    dispatch(addInvoiceId(temp));
+  };
+
+  const handletoName = (e) => {
+    const temp = e.target.value;
+    dispatch(addToName(temp));
+  };
+
+  const handletoEmail = (e) => {
+    const temp = e.target.value;
+    dispatch(addToEMail(temp));
+  };
+
+  const handletoAddress = (e) => {
+    const temp = e.target.value;
+    dispatch(addToAddress(temp));
+  };
+
+  const handlefromName = (e) => {
+    const temp = e.target.value;
+    dispatch(addFromName(temp));
+  };
+
+  const handlefromEmail = (e) => {
+    const temp = e.target.value;
+    dispatch(addFromEmail(temp));
+  };
+
+  const handlefromAddress = (e) => {
+    const temp = e.target.value;
+    dispatch(addFromAddress(temp));
+  };
+
+  const handleaddtoNote = (e) => {
+    const temp = e.target.value;
+    dispatch(addNote(temp));
   };
 
   return (
@@ -164,12 +200,24 @@ const Invoice = () => {
           <DateDiv>
             <CurrentDate>Current Date:</CurrentDate>
             <DueDate>
-              Due Date: <Input style={{ height: 25 }} type="date" />
+              Due Date:{" "}
+              <Input
+                style={{ height: 25 }}
+                type="date"
+                required
+                onChange={(e) => handleaddDate(e)}
+              />
             </DueDate>
           </DateDiv>
           <InvoiceDiv>
             <InvoiceNumber>
-              Invoice: <Input style={{ width: 50, height: 20 }} type="number" />
+              Invoice:{" "}
+              <Input
+                style={{ width: 50, height: 20 }}
+                type="number"
+                required
+                onChange={(e) => handleaddInvoiceId(e)}
+              />
             </InvoiceNumber>
           </InvoiceDiv>
         </DateContainer>
@@ -179,14 +227,20 @@ const Invoice = () => {
             <Input
               style={{ height: 30, width: "90%" }}
               placeholder="Who is this invoice to?"
+              required
+              onChange={(e) => handletoName(e)}
             />
             <Input
               style={{ height: 30, marginTop: 15, width: "90%" }}
               placeholder="Email address"
+              required
+              onChange={(e) => handletoEmail(e)}
             />
             <Input
               style={{ height: 30, marginTop: 15, width: "90%" }}
               placeholder="Billing address"
+              required
+              onChange={(e) => handletoAddress(e)}
             />
           </Bill>
           <Bill>
@@ -194,14 +248,20 @@ const Invoice = () => {
             <Input
               style={{ height: 30, width: "90%" }}
               placeholder="Who is this invoice from?"
+              required
+              onChange={(e) => handlefromName(e)}
             />
             <Input
               style={{ height: 30, marginTop: 15, width: "90%" }}
               placeholder="Email address"
+              required
+              onChange={(e) => handlefromEmail(e)}
             />
             <Input
               style={{ height: 30, marginTop: 15, width: "90%" }}
               placeholder="Billing address"
+              required
+              onChange={(e) => handlefromAddress(e)}
             />
           </Bill>
         </BillContainer>
@@ -217,12 +277,10 @@ const Invoice = () => {
           <NoteArea
             style={{ width: "100%" }}
             placeholder="Thanks for your Business!!"
+            onChange={(e) => handleaddtoNote(e)}
           />
         </NotesContainer>
       </InvoiceContainer>
-      <ReviewContainer>
-        <ReviewButton>Review Invoice</ReviewButton>
-      </ReviewContainer>
     </Container>
   );
 };

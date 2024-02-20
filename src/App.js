@@ -1,10 +1,15 @@
 import './App.css';
-import Invoice from './Invoice';
+import { Provider } from 'react-redux';
+import store  from './redux/store';
+import Home from './Home';
 
 function App() {
   return (
     <div className="App">
-     <Invoice/>
+       <Provider store={store}>
+        <Home/>
+       </Provider>
+     
     </div>
   );
 }

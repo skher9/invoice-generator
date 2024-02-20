@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { useDispatch } from "react-redux";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
+import { addItem } from "../redux/Invoice/invoiceActions";
 
 const Container = styled.div`
   margin-top: 25px;
@@ -46,7 +48,32 @@ const Button = styled.button`
   color: White;
 `;
 
-const Item = () => {
+const Item = ({ id }) => {
+  const [itemData, setItemData] = useState({
+    id: id,
+    quantity: 0,
+    price: 0,
+    itemName: "",
+    itemDescription: "",
+  });
+
+  const dispatch = useDispatch();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setItemData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      console.log(itemData);
+      dispatch(addItem(itemData));
+    }
+  };
+
   return (
     <Container>
       <Header>
@@ -58,19 +85,43 @@ const Item = () => {
       <ItemContainer>
         <InputContainer style={{ flex: 1 }}>
           <Input
+            type="text"
+            name="itemName"
+            required
             style={{ marginTop: 10, width: "80%", height: 25 }}
             placeholder="Item name"
+            value={itemData.itemName}
+            onChange={handleChange}
+            onKeyDown={(e) => handleKeyDown(e)}
           />
           <Input
+            type="text"
+            name="itemDescription"
+            required
             style={{ marginTop: 10, width: "80%", height: 25 }}
             placeholder="Item description"
+            value={itemData.itemDescription}
+            onChange={handleChange}
+            onKeyDown={(e) => handleKeyDown(e)}
           />
         </InputContainer>
         <Input
+          type="number"
+          name="quantity"
+          required
           style={{ width: 40, height: 25, marginTop: 10, marginLeft: 10 }}
+          value={itemData.quantity}
+          onChange={handleChange}
+          onKeyDown={(e) => handleKeyDown(e)}
         ></Input>
         <Input
+          type="number"
+          name="price"
+          required
           style={{ width: 60, height: 25, marginTop: 10, marginLeft: 25 }}
+          value={itemData.price}
+          onChange={handleChange}
+          onKeyDown={(e) => handleKeyDown(e)}
         ></Input>
         <Button>
           <DeleteForeverOutlinedIcon />
